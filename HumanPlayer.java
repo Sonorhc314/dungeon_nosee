@@ -56,6 +56,7 @@ public class HumanPlayer {
                 respond_logic.quit();
                 break;
             default:
+                System.out.println("Command was not recognized");
                 break;
         }
     }
