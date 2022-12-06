@@ -1,0 +1,1 @@
+player= new HumanPlayer();
