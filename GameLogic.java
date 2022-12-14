@@ -56,6 +56,7 @@ public class GameLogic {
 						current_col_bot = rand_col;
 						break;
 				}
+				break;
 			}
 		}
 	}
