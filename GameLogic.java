@@ -6,10 +6,11 @@ public class GameLogic {
 	
 	/* Reference to the map being used */
 	private Map map;
+	/*the user prompt analysing class */
 	private HumanPlayer player;
 	private final int all_gold; //all gold on map
 	private int current_gold = 0; //increases as player picks up gold
-	private char[][] change_map;
+	private char[][] change_map; //map where bot and player run and change position
 	private char[][] original_map;
 	//---------------------
 	//coordinates for a human player
@@ -34,7 +35,7 @@ public class GameLogic {
 	}
 
 
-	public void initializePlayerBot(char player_bot, int isbot)
+	public void initializePlayerBot(char player_bot, int isbot)//initializes a bot
 	{
 		
 		while(true)
@@ -47,11 +48,11 @@ public class GameLogic {
 				change_map[rand_row][rand_col] = player_bot;//sets player('P'/'B') on a map
 				switch(isbot)//checks who is a player
 				{//assigns coordinates to a player
-					case 0:
+					case 0://player is a human
 						current_row = rand_row;
 						current_col = rand_col;
 						break;
-					case 1:
+					case 1://player is a bot
 						current_row_bot = rand_row;
 						current_col_bot = rand_col;
 						break;
@@ -144,7 +145,7 @@ public class GameLogic {
 		{
 			current_gold++;//increases gold owned by human player
 			original_map[current_row][current_col] = '.';//if gold was picked up then leaves empty space
-			change_map[current_row][current_col] = '.';//on both maps
+			//change_map[current_row][current_col] = '.';//on both maps
 			System.out.println("Successful");
 		}
 		else
@@ -178,7 +179,7 @@ public class GameLogic {
 		char[] no_move = {'#', 'B', 'P'};//where players can not move
 		boolean is_movable=true;
 		for (char element : no_move) {
-			if (element == original_map[current_row+row][current_col+col]) {
+			if (element == change_map[current_row+row][current_col+col]) {
 				is_movable=false;
 			}
 		}
