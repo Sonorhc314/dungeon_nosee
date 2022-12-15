@@ -88,9 +88,8 @@ public class GameLogic {
 
 	public void runGame()
 	{
-		player = new HumanPlayer(mapname_file); //constructor inside HumanPlayer that creates GameLogic object
+		player = new HumanPlayer(this); //constructor inside HumanPlayer that creates GameLogic object
 		System.out.println("name is " + mapname_title);
-		System.out.println("gold is " + required_gold);
 		while(true)
 		{
 			player.humanplayer_start(); //will prompt with scanner and process commmand

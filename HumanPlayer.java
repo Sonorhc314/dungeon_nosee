@@ -5,11 +5,10 @@
 import java.util.Scanner;
 
 public class HumanPlayer {
-    
-    private GameLogic respond_logic;
-    public HumanPlayer(String mapname_file)
+    GameLogic respond_logic;
+    public HumanPlayer(GameLogic respond_logic)
     {
-        respond_logic = new GameLogic(mapname_file);
+        this.respond_logic = respond_logic;
     }
     
     public void humanplayer_start()
