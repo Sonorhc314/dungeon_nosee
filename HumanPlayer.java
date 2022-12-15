@@ -7,9 +7,9 @@ import java.util.Scanner;
 public class HumanPlayer {
     
     private GameLogic respond_logic;
-    public HumanPlayer()
+    public HumanPlayer(String mapname_file)
     {
-        respond_logic = new GameLogic();
+        respond_logic = new GameLogic(mapname_file);
     }
     
     public void humanplayer_start()

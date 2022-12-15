@@ -8,10 +8,12 @@ public class GameLogic {
 	private Map map;
 	/*the user prompt analysing class */
 	private HumanPlayer player;
-	private final int all_gold; //all gold on map
+	private final int required_gold; //all gold on map
 	private int current_gold = 0; //increases as player picks up gold
 	private char[][] change_map; //map where bot and player run and change position
 	private char[][] original_map;
+	String mapname_file="";//nothing -> default map
+	String mapname_title;
 	//---------------------
 	//coordinates for a human player
 	private int current_row;
@@ -23,21 +25,34 @@ public class GameLogic {
 
 
 	public GameLogic() {//contstructor
-		map = new Map();
+		this("");//default noname constr. for map
+	}
+
+	public GameLogic(String mapname_file) {//contstructor
+		if(mapname_file.length()==0)
+		{
+			map = new Map();
+		}
+		else
+		{
+			map = new Map(mapname_file);
+			this.mapname_file = mapname_file;
+		}
+		mapname_title = map.getMapName();
+		required_gold = map.getGold();
+
 		original_map = map.returnMap();
 		change_map = new char[original_map.length][original_map[0].length];
 		for (int i = 0; i < original_map.length; i++) { //copies original_arrays
         	System.arraycopy(original_map[i], 0, change_map[i], 0, original_map[i].length);
     	}
-		all_gold = allGold();
+		//all_gold = allGold();
 		initializePlayerBot('P', 0); //initialize player
 		initializePlayerBot('B', 1); //initialize bot
 	}
 
-
 	public void initializePlayerBot(char player_bot, int isbot)//initializes a bot
 	{
-		
 		while(true)
 		{
 			//randomly picks indexes for a player
@@ -73,24 +88,26 @@ public class GameLogic {
 
 	public void runGame()
 	{
-		player = new HumanPlayer(); //constructor inside HumanPlayer that creates GameLogic object
+		player = new HumanPlayer(mapname_file); //constructor inside HumanPlayer that creates GameLogic object
+		System.out.println("name is " + mapname_title);
+		System.out.println("gold is " + required_gold);
 		while(true)
 		{
 			player.humanplayer_start(); //will prompt with scanner and process commmand
 		}
 	}
 
-	final int allGold() //counts all occurances of G on the map
-	{
-		int all_gold = 0;
-		for (int i = 0; i<original_map.length; i++) {
-			for (int j = 0; j<original_map[0].length; j++){
-				if(original_map[i][j]=='G')
-				{all_gold++;}
-			}
-		}
-		return all_gold;
-	}
+	// final int allGold() //counts all occurances of G on the map
+	// {
+	// 	int all_gold = 0;
+	// 	for (int i = 0; i<original_map.length; i++) {
+	// 		for (int j = 0; j<original_map[0].length; j++){
+	// 			if(original_map[i][j]=='G')
+	// 			{all_gold++;}
+	// 		}
+	// 	}
+	// 	return all_gold;
+	// }
 	public void returnChangeMap()
 	{
 		for (int i = 0; i<change_map.length; i++) {
@@ -133,7 +150,7 @@ public class GameLogic {
      * @return : Gold required to win.
      */
     public String hello() {
-		System.out.printf("You need %d of gold ingots\n",all_gold);
+		System.out.printf("You need %d of gold ingots\n",required_gold);
         return null;
     }
     public String gold() {
@@ -162,7 +179,7 @@ public class GameLogic {
     }
 
 	public String quit() {
-		if(current_gold == all_gold && original_map[current_row][current_col]=='E')
+		if(current_gold == required_gold && original_map[current_row][current_col]=='E')
 		{//player collected all gold and stands of E -> win
 			System.out.println("WIN");
 		}
