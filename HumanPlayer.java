@@ -4,7 +4,8 @@
  */
 import java.util.Scanner;
 
-public class HumanPlayer {
+
+public class HumanPlayer implements HumanBot{
     GameLogic respond_logic;
     public HumanPlayer(GameLogic respond_logic)
     {
@@ -37,7 +38,7 @@ public class HumanPlayer {
                 respond_logic.pickup();
                 break;
             case "look": 
-                respond_logic.look();
+                look();
                 break;
             case "move n": 
                 respond_logic.move('n', false);
@@ -59,4 +60,17 @@ public class HumanPlayer {
                 break;
         }
     }
+    public void look()//gets 5x5 look
+    {
+        char[][] gridlook = respond_logic.returnGridLook();
+        for(int i=0;i<gridlook.length;i++)
+        {
+            for(int j=0;j<gridlook[0].length;j++)
+            {
+                System.out.print(gridlook[i][j]);
+            }
+            System.out.println();
+        }
+    }
+    
 }

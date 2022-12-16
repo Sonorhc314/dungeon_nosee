@@ -78,6 +78,17 @@ public class GameLogic {
 		}
 	}
 
+	//getters-------
+	public int getRowBot()
+	{
+		return current_row_bot;
+	}
+	public int getColBot()
+	{
+		return current_col_bot;
+	}
+	//--------------
+
     /**
 	 * Checks if the game is running
 	 *
@@ -110,13 +121,6 @@ public class GameLogic {
 	// 	}
 	// 	return all_gold;
 	// }
-	public void returnChangeMap()
-	{
-		for (int i = 0; i<change_map.length; i++) {
-			System.out.print(change_map[i]);
-			System.out.println();
-		}
-	}
 
 	public char[][] returnGridLook() //shows 5x5 grid with player in the center
 	{
@@ -136,9 +140,34 @@ public class GameLogic {
 				{
 					gridArray[i][j] = '#';
 				}
-				System.out.print(gridArray[i][j]);
+				//System.out.print(gridArray[i][j]);
 			}
-			System.out.println();
+			//System.out.println();
+		} 
+		return gridArray;
+	}
+
+	public char[][] returnGridLookBot() //shows 5x5 grid with player in the center
+	{
+		int range_lookup = 5;
+		char[][] gridArray = new char[range_lookup][range_lookup];
+		for(int i=0, i_changeMap=-2; i<range_lookup; i++, i_changeMap++)
+		{
+			for(int j=0, j_changeMap=-2; j<range_lookup; j++, j_changeMap++)
+			{
+				boolean inBoundsRow = (i_changeMap+current_row_bot >= 0) && (i_changeMap+current_row_bot  < change_map.length);
+				boolean inBoundsCol = (j_changeMap+current_col_bot  >= 0) && (j_changeMap+current_col_bot  < change_map[0].length);
+				if(inBoundsCol && inBoundsRow)
+				{
+					gridArray[i][j] = change_map[current_row_bot+i_changeMap][current_col_bot+j_changeMap];
+				}
+				else
+				{
+					gridArray[i][j] = '#';
+				}
+				//System.out.print(gridArray[i][j]);
+			}
+			//System.out.println();
 		} 
 		return gridArray;
 	}
@@ -172,12 +201,6 @@ public class GameLogic {
 		{//gold not found on the spot
 			System.out.println("Unsuccessful");
 		}
-        return null;
-    }
-
-    public String look() {
-		returnGridLook();//displays 5x5 grid for player's orientation
-		//returnChangeMap();
         return null;
     }
 
