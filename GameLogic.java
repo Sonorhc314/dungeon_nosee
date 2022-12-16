@@ -8,6 +8,7 @@ public class GameLogic {
 	private Map map;
 	/*the user prompt analysing class */
 	private HumanPlayer player;
+	private BotPlayer bot;
 	private final int required_gold; //all gold on map
 	private int current_gold = 0; //increases as player picks up gold
 	private char[][] change_map; //map where bot and player run and change position
@@ -47,11 +48,11 @@ public class GameLogic {
         	System.arraycopy(original_map[i], 0, change_map[i], 0, original_map[i].length);
     	}
 		//all_gold = allGold();
-		initializePlayerBot('P', 0); //initialize player
-		initializePlayerBot('B', 1); //initialize bot
+		initializePlayerBot('P', false); //initialize player
+		initializePlayerBot('B', true); //initialize bot
 	}
 
-	public void initializePlayerBot(char player_bot, int isbot)//initializes a bot
+	public void initializePlayerBot(char player_bot, Boolean isbot)//initializes a bot
 	{
 		while(true)
 		{
@@ -61,18 +62,18 @@ public class GameLogic {
 			if((change_map[rand_row][rand_col]=='.' || change_map[rand_row][rand_col]=='E'))
 			{
 				change_map[rand_row][rand_col] = player_bot;//sets player('P'/'B') on a map
-				switch(isbot)//checks who is a player
+				if(!isbot)//checks who is a player
 				{//assigns coordinates to a player
-					case 0://player is a human
-						current_row = rand_row;
-						current_col = rand_col;
-						break;
-					case 1://player is a bot
-						current_row_bot = rand_row;
-						current_col_bot = rand_col;
-						break;
+					current_row = rand_row;
+					current_col = rand_col;
+					break;
 				}
-				break;
+				else//assigns coordinates to bot
+				{
+					current_row_bot = rand_row;
+					current_col_bot = rand_col;
+					break;
+				}
 			}
 		}
 	}
@@ -89,10 +90,12 @@ public class GameLogic {
 	public void runGame()
 	{
 		player = new HumanPlayer(this); //constructor inside HumanPlayer that creates GameLogic object
+		bot = new BotPlayer(this); 
 		System.out.println("name is " + mapname_title);
 		while(true)
 		{
 			player.humanplayer_start(); //will prompt with scanner and process commmand
+			bot.botplayerStart();
 		}
 	}
 
@@ -115,7 +118,7 @@ public class GameLogic {
 		}
 	}
 
-	public void returnGridLook() //shows 5x5 grid with player in the center
+	public char[][] returnGridLook() //shows 5x5 grid with player in the center
 	{
 		int range_lookup = 5;
 		char[][] gridArray = new char[range_lookup][range_lookup];
@@ -137,6 +140,7 @@ public class GameLogic {
 			}
 			System.out.println();
 		} 
+		return gridArray;
 	}
 
 	public void PrintMap()
@@ -162,7 +166,7 @@ public class GameLogic {
 			current_gold++;//increases gold owned by human player
 			original_map[current_row][current_col] = '.';//if gold was picked up then leaves empty space
 			//change_map[current_row][current_col] = '.';//on both maps
-			System.out.println("Successful");
+			System.out.println("Successful. Your number of gold is " + current_gold);
 		}
 		else
 		{//gold not found on the spot
@@ -190,39 +194,70 @@ public class GameLogic {
         return null;
     }
 
-	public String move_detailed(int row, int col) //changes how player is displayed on a map
+	public void move_detailed(int row, int col, Boolean isbot) //changes how player is displayed on a map
 	{//depends on the input from "move x" prompt
-		char[] no_move = {'#', 'B', 'P'};//where players can not move
+		char[] no_move = {'#'};//where players can not move
 		boolean is_movable=true;
-		for (char element : no_move) {
-			if (element == change_map[current_row+row][current_col+col]) {
-				is_movable=false;
+		if(!isbot)
+		{
+			for (char element : no_move) {
+				if (element == change_map[current_row+row][current_col+col]) {
+					is_movable=false;
+				}
+			}
+			if(is_movable)
+			{
+				if(change_map[current_row+row][current_col+col]=='B')
+				{
+					System.out.println("LOOSE");
+					System.exit(0);
+				}
+				change_map[current_row][current_col]=original_map[current_row][current_col];
+				current_row = current_row+row;
+				current_col = current_col+col;
+				change_map[current_row][current_col]='P';
+				System.out.println("Success");
+			}
+			else
+			{
+				System.out.println("Fail");
 			}
 		}
-		if(is_movable)
+		else
 		{
-			change_map[current_row][current_col]=original_map[current_row][current_col];
-			current_row = current_row+row;
-			current_col = current_col+col;
-			change_map[current_row][current_col]='P';
-			return "Success";
+			for (char element : no_move) {
+				if (element == change_map[current_row_bot+row][current_col_bot+col]) {
+					is_movable=false;
+				}
+			}
+			if(is_movable)
+			{
+				if(change_map[current_row_bot+row][current_col_bot+col]=='P')
+				{
+					System.out.println("LOOSE");
+					System.exit(0);
+				}
+				change_map[current_row_bot][current_col_bot]=original_map[current_row_bot][current_col_bot];
+				current_row_bot = current_row_bot+row;
+				current_col_bot = current_col_bot+col;
+				change_map[current_row_bot][current_col_bot]='B';
+			}
 		}
-		return "Fail";
 	}
 
-    public void move(char direction) { //moves player in 4 directions
+    public void move(char direction, boolean isbot) { //moves player in 4 directions
         switch(direction){//only 4 cases present so I use switch
 			case 'n':
-				System.out.println(move_detailed(-1,0));//goes up by one
+				move_detailed(-1,0, isbot);//goes up by one
 				break;
 			case 's':
-				System.out.println(move_detailed(1,0));//goes down by one
+				move_detailed(1,0, isbot);//goes down by one
 				break;
 			case 'w':
-				System.out.println(move_detailed(0,-1));//goes left by one
+				move_detailed(0,-1, isbot);//goes left by one
 				break;
 			case 'e':
-				System.out.println(move_detailed(0,1));//goes right by one
+				move_detailed(0,1, isbot);//goes right by one
 				break;
 		}
     }

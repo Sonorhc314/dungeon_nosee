@@ -40,16 +40,16 @@ public class HumanPlayer {
                 respond_logic.look();
                 break;
             case "move n": 
-                respond_logic.move('n');
+                respond_logic.move('n', false);
                 break;
             case "move s": 
-                respond_logic.move('s');
+                respond_logic.move('s', false);
                 break;
             case "move w":
-                respond_logic.move('w');
+                respond_logic.move('w', false);
                 break;
             case "move e":
-                respond_logic.move('e');
+                respond_logic.move('e', false);
                 break;
             case "quit":
                 respond_logic.quit();
