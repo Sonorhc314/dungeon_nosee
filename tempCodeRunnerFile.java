@@ -1,2 +1,3 @@
-System.out.println("player col is " + player_col);
-        // System.out.println("player row is " + player_row);
+int current_row = respond_logic.getRow();
+        int current_col = respond_logic.getCol();
+        char[][] change_map = respond_logic.getChangeMap();

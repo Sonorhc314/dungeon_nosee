@@ -20,7 +20,7 @@ public class Map {
 	/**
 	 * Default constructor, creates the default map "Very small Labyrinth of doom".
 	 */
-	public Map() {
+	public Map() {//default map if filepath not specified
 		mapName = "Very small Labyrinth of Doom";
 		goldRequired = 2;
 		map = new char[][]{
@@ -41,21 +41,8 @@ public class Map {
 	 *
 	 * @param : The filename of the map file.
 	 */
-	public Map(String fileName) {
+	public Map(String fileName) {//read map from filepath
 		readFileMap(fileName);
-	}
-
-
-    /**
-     * Reads the map from file.
-     *
-     * @param : Name of the map's file.
-     */
-    public void readMap() {
-		for (int i = 0; i<map.length; i++) {
-			System.out.print(map[i]);
-			System.out.println();
-		}
 	}
 
 
@@ -65,7 +52,6 @@ public class Map {
 	}
 
 	public void readFileMap(String fileName) {//gets map from file
-		//map = new char[][];
 		try {
 			File myObj = new File(fileName);
 			Scanner myReader = new Scanner(myObj); //used to actually fetch data
@@ -89,7 +75,7 @@ public class Map {
 				String data = myReader.nextLine();
 				if(line==0)
 				{
-					mapName = data;//all maps have name on row 0
+					mapName = data;//all maps have name on row 0, get it
 				}
 				else if(line==1)
 				{//get integer out of string (ex.: win 13 -> 13)
@@ -116,12 +102,12 @@ public class Map {
 	}
 	//-------------Getters------
 
-	int getGold()
+	int getGold()//returns gold required to win
 	{
 		return goldRequired;
 	}
 
-	String getMapName()
+	String getMapName()//returns name of the map
 	{
 		return mapName;
 	}

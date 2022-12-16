@@ -5,12 +5,17 @@
 public class GameLogic {
 	
 	/* Reference to the map being used */
-	private Map map;
 	/*the user prompt analysing class */
 	private HumanPlayer player;
 	private BotPlayer bot;
+	//---------------------
+	//gold
 	private final int required_gold; //all gold on map
 	private int current_gold = 0; //increases as player picks up gold
+	private int current_gold_bot = 0; //increases as bot picks up gold
+	//---------------------
+	//maps
+	private Map map;
 	private char[][] change_map; //map where bot and player run and change position
 	private char[][] original_map;
 	String mapname_file="";//nothing -> default map
@@ -39,11 +44,11 @@ public class GameLogic {
 			map = new Map(mapname_file);
 			this.mapname_file = mapname_file;
 		}
-		mapname_title = map.getMapName();
-		required_gold = map.getGold();
+		mapname_title = map.getMapName(); //get name of the map
+		required_gold = map.getGold(); //get required gold
 
-		original_map = map.returnMap();
-		change_map = new char[original_map.length][original_map[0].length];
+		original_map = map.returnMap(); //map with no moving
+		change_map = new char[original_map.length][original_map[0].length]; //map where bot and player move
 		for (int i = 0; i < original_map.length; i++) { //copies original_arrays
         	System.arraycopy(original_map[i], 0, change_map[i], 0, original_map[i].length);
     	}
@@ -52,9 +57,9 @@ public class GameLogic {
 		initializePlayerBot('B', true); //initialize bot
 	}
 
-	public void initializePlayerBot(char player_bot, Boolean isbot)//initializes a bot
+	public void initializePlayerBot(char player_bot, Boolean isbot)//initializes a humanplayer/bot
 	{
-		while(true)
+		while(true)//find the right random location for players
 		{
 			//randomly picks indexes for a player
 			int rand_row = (int)(Math.random()*change_map.length);
@@ -87,16 +92,51 @@ public class GameLogic {
 	{
 		return current_col_bot;
 	}
+	public int getRow()
+	{
+		return current_row;
+	}
+	public int getCol()
+	{
+		return current_col;
+	}
+	public int getCurrentGold()
+	{
+		return current_gold;
+	}
+	public int getCurrentGoldBot()
+	{
+		return current_gold_bot;
+	}
+	public char[][] getOriginalMap()
+	{
+		return original_map;
+	}
+	int getRequiredGold()
+	{
+		return required_gold;
+	}
+	char[][] getChangeMap()
+	{
+		return change_map;
+	}
 	//--------------
 
-    /**
-	 * Checks if the game is running
-	 *
-     * @return if the game is running.
-     */
-    public boolean gameRunning() {
-        return false;
-    }
+	//---setters---
+
+	public void setCurrentGold(int setgold)
+	{
+		current_gold = setgold;
+	}
+	public void setCurrentGoldBot(int setgoldbot)
+	{
+		current_gold_bot = setgoldbot;
+	}
+	public void setOriginalMap(int row, int column)
+	{
+		original_map[row][column] = '.';
+	}
+	//--------------
 
 	public void runGame()
 	{
@@ -106,120 +146,27 @@ public class GameLogic {
 		while(true)
 		{
 			player.humanplayer_start(); //will prompt with scanner and process commmand
-			bot.botplayerStart();
+			bot.botplayerStart(); //bot responds after player makes a decision
 		}
 	}
+	//---------------------------------
+	//human player responses
 
-	// final int allGold() //counts all occurances of G on the map
-	// {
-	// 	int all_gold = 0;
-	// 	for (int i = 0; i<original_map.length; i++) {
-	// 		for (int j = 0; j<original_map[0].length; j++){
-	// 			if(original_map[i][j]=='G')
-	// 			{all_gold++;}
-	// 		}
-	// 	}
-	// 	return all_gold;
-	// }
-
-	public char[][] returnGridLook() //shows 5x5 grid with player in the center
-	{
-		int range_lookup = 5;
-		char[][] gridArray = new char[range_lookup][range_lookup];
-		for(int i=0, i_changeMap=-2; i<range_lookup; i++, i_changeMap++)
-		{
-			for(int j=0, j_changeMap=-2; j<range_lookup; j++, j_changeMap++)
-			{
-				boolean inBoundsRow = (i_changeMap+current_row >= 0) && (i_changeMap+current_row  < change_map.length);
-				boolean inBoundsCol = (j_changeMap+current_col  >= 0) && (j_changeMap+current_col  < change_map[0].length);
-				if(inBoundsCol && inBoundsRow)
-				{
-					gridArray[i][j] = change_map[current_row+i_changeMap][current_col+j_changeMap];
-				}
-				else
-				{
-					gridArray[i][j] = '#';
-				}
-				//System.out.print(gridArray[i][j]);
-			}
-			//System.out.println();
-		} 
-		return gridArray;
-	}
-
-	public char[][] returnGridLookBot() //shows 5x5 grid with player in the center
-	{
-		int range_lookup = 5;
-		char[][] gridArray = new char[range_lookup][range_lookup];
-		for(int i=0, i_changeMap=-2; i<range_lookup; i++, i_changeMap++)
-		{
-			for(int j=0, j_changeMap=-2; j<range_lookup; j++, j_changeMap++)
-			{
-				boolean inBoundsRow = (i_changeMap+current_row_bot >= 0) && (i_changeMap+current_row_bot  < change_map.length);
-				boolean inBoundsCol = (j_changeMap+current_col_bot  >= 0) && (j_changeMap+current_col_bot  < change_map[0].length);
-				if(inBoundsCol && inBoundsRow)
-				{
-					gridArray[i][j] = change_map[current_row_bot+i_changeMap][current_col_bot+j_changeMap];
-				}
-				else
-				{
-					gridArray[i][j] = '#';
-				}
-				//System.out.print(gridArray[i][j]);
-			}
-			//System.out.println();
-		} 
-		return gridArray;
-	}
-
-	public void PrintMap()
-	{
-		map.readMap();
-	}
     /**
 	 * Returns the gold required to win.
 	 *
      * @return : Gold required to win.
      */
-    public String hello() {
+    public void hello() {//returns required gold to win
 		System.out.printf("You need %d of gold ingots\n",required_gold);
-        return null;
     }
-    public String gold() {
+    public void gold() {//returns current gold of a player
 		System.out.printf("You have %d gold ingots\n", current_gold);
-        return null;
-    }
-    public String pickup() {//picks gold if the is any
-		if(original_map[current_row][current_col]=='G')
-		{
-			current_gold++;//increases gold owned by human player
-			original_map[current_row][current_col] = '.';//if gold was picked up then leaves empty space
-			//change_map[current_row][current_col] = '.';//on both maps
-			System.out.println("Successful. Your number of gold is " + current_gold);
-		}
-		else
-		{//gold not found on the spot
-			System.out.println("Unsuccessful");
-		}
-        return null;
-    }
-
-	public String quit() {
-		if(current_gold == required_gold && original_map[current_row][current_col]=='E')
-		{//player collected all gold and stands of E -> win
-			System.out.println("WIN");
-		}
-		else//otherwise instant loose
-		{
-			System.out.println("LOOSE");
-		}
-		System.exit(0);//exits a game
-        return null;
     }
 
 	public void move_detailed(int row, int col, Boolean isbot) //changes how player is displayed on a map
 	{//depends on the input from "move x" prompt
-		char[] no_move = {'#'};//where players can not move
+		char[] no_move = {'#'};//where players can not move(could add some more symbols)
 		boolean is_movable=true;
 		if(!isbot)
 		{
@@ -232,7 +179,7 @@ public class GameLogic {
 			{
 				if(change_map[current_row+row][current_col+col]=='B')
 				{
-					System.out.println("LOOSE");
+					System.out.println("LOOSE");//instant loose if player stables into bot
 					System.exit(0);
 				}
 				change_map[current_row][current_col]=original_map[current_row][current_col];
@@ -256,7 +203,7 @@ public class GameLogic {
 			if(is_movable)
 			{
 				if(change_map[current_row_bot+row][current_col_bot+col]=='P')
-				{
+				{//bot catches player
 					System.out.println("LOOSE");
 					System.exit(0);
 				}
@@ -284,4 +231,6 @@ public class GameLogic {
 				break;
 		}
     }
+
+	//---------------------------------
 }
