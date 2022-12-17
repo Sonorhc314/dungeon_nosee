@@ -1,15 +1,26 @@
 public class BotPlayer implements HumanBot{//implements methods from general interface
     GameLogic respond_logic;
+    //----coordinates bot looks for using look()
     private int player_row;
     private int player_col;
     private int gold_row;
     private int gold_col;
     private int exit_row;
     private int exit_col;
+    //---------------------
+    //+bot coordinates on the grid
     private int BotGridRow;
     private int BotGridCol;
+    //---------------------
+    //gold
     private int current_gold_bot = 0;
     private int required_gold;
+    //---------------------
+    //where bot is in rel to original(change_map) map
+    int current_row_bot;
+    int current_col_bot;
+    //---------------------
+    private char[][] change_map;
     private boolean player_found=false;
     private boolean gold_found=false;
     private boolean can_exit=false;
@@ -19,16 +30,16 @@ public class BotPlayer implements HumanBot{//implements methods from general int
         this.respond_logic = respond_logic;
         required_gold = respond_logic.getRequiredGold();
     }
-    public void botplayerStart()
+    public void botplayerStart()//starts bot
     {
         respond();
     }
     public void respond()
     {
-        if(count==3)
+        if(count==3)//every 3rd command is look(), 1st in the start as well
         {
             look();
-            count=0;
+            count=0;//reset counter
         }
         else
         {
@@ -38,21 +49,21 @@ public class BotPlayer implements HumanBot{//implements methods from general int
                 boolean vertical = true;
                 if(player_col==BotGridCol)
                 {
-                    horizontal = false;
+                    horizontal = false;//if bot needs to move horizontally
                 }
 
                 if(player_row==BotGridRow)
                 {
-                    vertical = false;
+                    vertical = false;//if bot needs to move vertically
                 }
                 
-                processMoves(horizontal, vertical);
+                processMoves(horizontal, vertical);//decides where it is most rational to move
             }
             else if(gold_found)
             {
-                if(gold_col==BotGridCol && gold_row==BotGridCol)
+                if(gold_col==BotGridCol && gold_row==BotGridRow)
                 {
-                    pickup();
+                    pickup();//bot picks gold if it stands on G
                 }
                 else
                 {
@@ -89,7 +100,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
             }
             else
             {
-                switch((int)(Math.random()*4))
+                switch((int)(Math.random()*4))//move randomly if nothing in the area
                 {
                     case 0: 
                         respond_logic.move('n', true);
@@ -108,7 +119,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
         }
         count++;
     }
-    public void look() 
+    public void look() //process 5x5 grid
     {
         char[][] gridarray = returnGridLook();
         BotGridRow = 2;
@@ -130,7 +141,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
         }
         if(!player_found)
         {
-            if(current_gold_bot==required_gold)
+            if(current_gold_bot==required_gold)//if bot has all gold, then looks for exit
             {
                 for(int i=0;i<gridarray.length;i++)
                 {
@@ -145,7 +156,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
                     }
                 }
             }
-            else
+            else//otherwise looks for G
             {
                 for(int i=0;i<gridarray.length;i++)
                 {
@@ -164,24 +175,24 @@ public class BotPlayer implements HumanBot{//implements methods from general int
     }
     public char[][] returnGridLook()
     {
-        int range_lookup = 5;
+        int range_lookup = 5;// 5x5
 		char[][] gridArray = new char[range_lookup][range_lookup];
-        int current_row_bot = respond_logic.getRowBot();
-        int current_col_bot = respond_logic.getColBot();
-        char[][] change_map = respond_logic.getChangeMap();
+        current_row_bot = respond_logic.getRowBot();
+        current_col_bot = respond_logic.getColBot();
+        change_map = respond_logic.getChangeMap();
 		for(int i=0, i_changeMap=-2; i<range_lookup; i++, i_changeMap++)
 		{
 			for(int j=0, j_changeMap=-2; j<range_lookup; j++, j_changeMap++)
-			{
+			{//check if map is in bounds
 				boolean inBoundsRow = (i_changeMap+current_row_bot >= 0) && (i_changeMap+current_row_bot  < change_map.length);
 				boolean inBoundsCol = (j_changeMap+current_col_bot  >= 0) && (j_changeMap+current_col_bot  < change_map[0].length);
-				if(inBoundsCol && inBoundsRow)
+				if(inBoundsCol && inBoundsRow)//if in bounds just copy
 				{
 					gridArray[i][j] = change_map[current_row_bot+i_changeMap][current_col_bot+j_changeMap];
 				}
 				else
 				{
-					gridArray[i][j] = '#';
+					gridArray[i][j] = '#';//# for empty
 				}
 			}
 		} 
@@ -211,7 +222,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
 		}
 		System.exit(0);//exits a game
     }
-    public void moveHoriz()
+    public void moveHoriz()//look how bot should move horizontally in rel to human
     {
         if(player_col>BotGridCol)
         {
@@ -224,7 +235,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
             BotGridCol--;
         }
     }
-    public void moveVert()
+    public void moveVert()//look how bot should move vertically in rel to human
     {
         if(player_row>BotGridRow)
         {
@@ -241,7 +252,7 @@ public class BotPlayer implements HumanBot{//implements methods from general int
     {
         if(horizontal && vertical)
         {
-            switch((int)(Math.random()*2))
+            switch((int)(Math.random()*2))//if bot can move both vert. and horiz. in rel to player ->choose randomly how
             {
                 case 0:
                     moveHoriz();
@@ -251,11 +262,11 @@ public class BotPlayer implements HumanBot{//implements methods from general int
                     break;
             }
         }
-        else if(horizontal && !vertical)
+        else if(horizontal && !vertical)//can move just horizontally, because bot and player have the same column
         {
             moveHoriz();
         }
-        else if(vertical && !horizontal)
+        else if(vertical && !horizontal)//can move just vertically, because bot and player have the same row
         {
             moveVert();
         }

@@ -6,10 +6,16 @@ import java.util.Scanner;
 
 
 public class HumanPlayer implements HumanBot{//implements methods from general interface
+    private char[][] original_map;
     GameLogic respond_logic;
+    char[][] change_map;
+    int current_row;
+    int current_col;
+    int current_gold;
     public HumanPlayer(GameLogic respond_logic)
     {
         this.respond_logic = respond_logic;//object to call for it's methods
+        current_gold = respond_logic.getCurrentGold();
     }
     
     public void humanplayer_start()
@@ -73,15 +79,15 @@ public class HumanPlayer implements HumanBot{//implements methods from general i
         }
     }
     public void pickup() {//picks gold if the is any
-        int current_row = respond_logic.getRow();
-        int current_col = respond_logic.getCol();
-        char[][] original_map = respond_logic.getOriginalMap();
-        int current_gold = respond_logic.getCurrentGold();
+        current_row = respond_logic.getRow();
+        current_col = respond_logic.getCol();
+        original_map = respond_logic.getOriginalMap();
 		if(original_map[current_row][current_col]=='G')
 		{
 			current_gold++;//increases gold owned by human player
             respond_logic.setCurrentGold(current_gold);
             respond_logic.setOriginalMap(current_row, current_col);//if gold was picked up then leaves empty space
+            original_map = respond_logic.getOriginalMap();
 			System.out.println("Successful. Your number of gold is " + current_gold);
 		}
 		else
@@ -91,11 +97,9 @@ public class HumanPlayer implements HumanBot{//implements methods from general i
     }
 
 	public void quit() {
-        int current_gold = respond_logic.getCurrentGold();
-        char[][] original_map = respond_logic.getOriginalMap();
         int required_gold = respond_logic.getRequiredGold();
-        int current_row = respond_logic.getRow();
-        int current_col = respond_logic.getCol();
+        current_row = respond_logic.getRow();
+        current_col = respond_logic.getCol();
 		if(current_gold == required_gold && original_map[current_row][current_col]=='E')
 		{//player collected all gold and stands of E -> win
 			System.out.println("WIN");
@@ -111,9 +115,9 @@ public class HumanPlayer implements HumanBot{//implements methods from general i
     {
 		int range_lookup = 5;
 		char[][] gridArray = new char[range_lookup][range_lookup];
-        int current_row = respond_logic.getRow();
-        int current_col = respond_logic.getCol();
-        char[][] change_map = respond_logic.getChangeMap();
+        current_row = respond_logic.getRow();
+        current_col = respond_logic.getCol();
+        change_map = respond_logic.getChangeMap();
 		for(int i=0, i_changeMap=-2; i<range_lookup; i++, i_changeMap++)
 		{
 			for(int j=0, j_changeMap=-2; j<range_lookup; j++, j_changeMap++)
@@ -126,11 +130,9 @@ public class HumanPlayer implements HumanBot{//implements methods from general i
 				}
 				else
 				{
-					gridArray[i][j] = '#';
+					gridArray[i][j] = '#';//# for empty spaces
 				}
-				//System.out.print(gridArray[i][j]);
 			}
-			//System.out.println();
 		} 
 		return gridArray;
     }
